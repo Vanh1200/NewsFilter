@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">News Filter</string>
+    <string name="tab_favorite">Favorite</string>
+    <string name="tab_saved">Saved</string>
+    <string name="tab_news">News</string>
+
+    <string name="act_loading">Loading</string>
+    <string name="act_search">Search</string>
+    <string name="act_delete">Delete</string>
+    <string name="act_delete_upcase">DELETE</string>
+    <string name="act_add_to_favorite">Add to favorite</string>
+
+    <string name="tb_search">Search</string>
+    <string name="tb_setting">Setting</string>
+</resources>
