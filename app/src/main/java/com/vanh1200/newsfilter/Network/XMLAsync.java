@@ -31,9 +31,9 @@ public class XMLAsync extends AsyncTask<String, Void, ArrayList<News>>{
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-//        progressDialog = new ProgressDialog(mContext);
-//        progressDialog.setCancelable(false);
-//        progressDialog.show();
+        progressDialog = new ProgressDialog(mContext);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
     }
 
     @Override
@@ -60,7 +60,7 @@ public class XMLAsync extends AsyncTask<String, Void, ArrayList<News>>{
     @Override
     protected void onPostExecute(ArrayList<News> news) {
         super.onPostExecute(news);
-        //progressDialog.dismiss();
+        progressDialog.dismiss();
         listenerCallBack.onParsedResultCallback(news);
     }
 

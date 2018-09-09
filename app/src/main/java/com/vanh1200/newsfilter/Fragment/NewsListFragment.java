@@ -39,7 +39,7 @@ public class NewsListFragment extends Fragment implements NewsListAdapter.onClic
     private NewsListAdapter newsListAdapter;
     private XMLAsync xmlAsync;
 
-    public ProgressDialog dialog;
+//    public ProgressDialog dialog;
 
     private boolean isSubmitedKeyword = false;
 
@@ -73,10 +73,8 @@ public class NewsListFragment extends Fragment implements NewsListAdapter.onClic
             keyword = keyword.trim().replace(" ", "%20");
             xmlAsync = new XMLAsync(this, getActivity());
             String url = MainActivity.API.replace("keyword", keyword);
-
-            dialog = new ProgressDialog(getActivity());
-            dialog.show();
-
+//            dialog = new ProgressDialog(getActivity());
+//            dialog.show();
             xmlAsync.execute(url);
             Log.d(TAG, "getDataFromKeyWord: URL: " + url);
         }
@@ -143,9 +141,7 @@ public class NewsListFragment extends Fragment implements NewsListAdapter.onClic
     @Override
     public void onParsedResultCallback(ArrayList<News> arrNews) {
         Log.d(TAG, "onParsedResultCallback: " +arrNews.size());
-
-        dialog.dismiss();
-
+//        dialog.dismiss();
         this.arrNews.clear();
         this.arrNews.addAll(arrNews);
         newsListAdapter.notifyDataSetChanged();
