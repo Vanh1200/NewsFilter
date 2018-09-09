@@ -12,4 +12,16 @@
 
     <string name="tb_search">Search</string>
     <string name="tb_setting">Setting</string>
+
+    <string name="favorite_no_favorites">You have no favorites</string>
+    <string name="favorite_guide">Press the heart button to add favorite news</string>
+
+    <string name="download_no_downloads">You have no downloads</string>
+    <string name="download_guide">Press the download button to add saved news</string>
+
+    <string name="filter_no_results">No results found</string>
+    <string name="filter_guide">Press the search icon at the top to search</string>
+    <string name="filter_not_search">You search nothing</string>
+    <string name="filter_guide_search_again">change your keyword and search again</string>
+
 </resources>

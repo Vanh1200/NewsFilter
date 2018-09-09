@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.widget.Toast;
 
 import com.vanh1200.newsfilter.Adapter.NewsListAdapter;
 import com.vanh1200.newsfilter.Adapter.ViewPagerAdapter;

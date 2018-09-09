@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.vanh1200.newsfilter.Fragment.FavoriteFragment;
 import com.vanh1200.newsfilter.Model.News;
 import com.vanh1200.newsfilter.R;
 
@@ -55,6 +56,10 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
 
     @Override
     public int getItemCount() {
+        if(mArrNews.size() == 0)
+            onClickSpecificIcon.onChangeScreen(FavoriteFragment.NO_FAVORITES);
+        else
+            onClickSpecificIcon.onChangeScreen(FavoriteFragment.LIST_FAVORITES);
         return mArrNews.size();
     }
 
@@ -96,9 +101,12 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
     }
 
     public interface onClickSpecificIcon{
+        void onChangeScreen(int which);
         void onClickFavoriteIcon(int position);
         void onClickDownloadIcon(int position, boolean status);
         void onClickShareIcon(int position);
     }
+
+
 
 }

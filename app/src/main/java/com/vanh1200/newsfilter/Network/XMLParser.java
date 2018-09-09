@@ -44,6 +44,7 @@ public class XMLParser extends DefaultHandler{
             case XMLTag.TAG_ITEM:
                 if(!allowed_item){
                     allowed_item = true;
+                    news = null;
                     break;
                 }
                 newsArrayList.add(news);
@@ -66,10 +67,9 @@ public class XMLParser extends DefaultHandler{
                 Log.d(TAG, "endElement: " + imgSrc);
                 news.setImage(imgSrc);
 
-                // Find publisher
+                // Find des
                 news.setDescription("Still not found");
                 //
-
                 break;
             case XMLTag.TAG_LINK:
                 if(!allowed_link){

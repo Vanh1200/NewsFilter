@@ -2,6 +2,7 @@ package com.vanh1200.newsfilter.Fragment;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.vanh1200.newsfilter.Activity.MainActivity;
@@ -26,10 +28,20 @@ import java.util.ArrayList;
 
 public class NewsListFragment extends Fragment implements NewsListAdapter.onClickSpecificIcon, XMLAsync.onResultListenerCallBack, MainActivity.onKeywordListener {
     private static final String TAG = "NewsListFragment";
+    public static final int NOT_SEARCH = 0;
+    public static final int NO_RESULTS = 1;
+    public static final int LIST_RESULT = 2;
+
     private ArrayList<News> arrNews = new ArrayList<>();
     private RecyclerView rcvNewsList;
+    private RelativeLayout notSearchScreen;
+    private RelativeLayout noResultsScreen;
     private NewsListAdapter newsListAdapter;
     private XMLAsync xmlAsync;
+
+    public ProgressDialog dialog;
+
+    private boolean isSubmitedKeyword = false;
 
     public NewsListFragment() {
     }
@@ -47,6 +59,8 @@ public class NewsListFragment extends Fragment implements NewsListAdapter.onClic
 
     private void initList(View view) {
         rcvNewsList = view.findViewById(R.id.rcv_news_list);
+        notSearchScreen = view.findViewById(R.id.default_filter_screen);
+        noResultsScreen = view.findViewById(R.id.no_result_screen);
         newsListAdapter = new NewsListAdapter(getActivity(), arrNews, this);
         rcvNewsList.setLayoutManager(new LinearLayoutManager(getActivity()));
         rcvNewsList.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
@@ -56,10 +70,34 @@ public class NewsListFragment extends Fragment implements NewsListAdapter.onClic
     private void excuteGetDataFromKeyWord(String keyword) {
         Log.d(TAG, "getDataFromKeyWord: " + keyword);
         if(keyword!=null){
-            xmlAsync = new XMLAsync(this);
+            keyword = keyword.trim().replace(" ", "%20");
+            xmlAsync = new XMLAsync(this, getActivity());
             String url = MainActivity.API.replace("keyword", keyword);
+
+            dialog = new ProgressDialog(getActivity());
+            dialog.show();
+
             xmlAsync.execute(url);
-            Log.d(TAG, "getDataFromKeyWord: URL" + url);
+            Log.d(TAG, "getDataFromKeyWord: URL: " + url);
+        }
+    }
+
+    @Override
+    public void onChangeScreen(int which) {
+        noResultsScreen.setVisibility(View.INVISIBLE);
+        rcvNewsList.setVisibility(View.INVISIBLE);
+        notSearchScreen.setVisibility(View.INVISIBLE);
+
+        switch (which){
+            case NO_RESULTS:
+                if(isSubmitedKeyword)
+                    noResultsScreen.setVisibility(View.VISIBLE);
+                else
+                    notSearchScreen.setVisibility(View.VISIBLE);
+                break;
+            case LIST_RESULT:
+                rcvNewsList.setVisibility(View.VISIBLE);
+                break;
         }
     }
 
@@ -95,14 +133,19 @@ public class NewsListFragment extends Fragment implements NewsListAdapter.onClic
 
     public void editItem(News news){
         int position = arrNews.indexOf(news);
-        arrNews.set(position, news);
-        newsListAdapter.notifyItemChanged(position);
+        if(position != -1){ // if item was found
+            arrNews.set(position, news);
+            newsListAdapter.notifyItemChanged(position);
+        }
     }
 
 
     @Override
     public void onParsedResultCallback(ArrayList<News> arrNews) {
         Log.d(TAG, "onParsedResultCallback: " +arrNews.size());
+
+        dialog.dismiss();
+
         this.arrNews.clear();
         this.arrNews.addAll(arrNews);
         newsListAdapter.notifyDataSetChanged();
@@ -110,6 +153,7 @@ public class NewsListFragment extends Fragment implements NewsListAdapter.onClic
 
     @Override
     public void onSubmittedKeyword(String keyword) {
+        isSubmitedKeyword = true;
         excuteGetDataFromKeyWord(keyword);
     }
 }

@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.Options;
 import com.bumptech.glide.request.RequestOptions;
 import com.vanh1200.newsfilter.Activity.WebviewActivity;
+import com.vanh1200.newsfilter.Fragment.NewsListFragment;
 import com.vanh1200.newsfilter.Model.News;
 import com.vanh1200.newsfilter.Network.DownloadImageAsync;
 import com.vanh1200.newsfilter.R;
@@ -82,6 +83,11 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.ViewHo
 
     @Override
     public int getItemCount() {
+        Log.d(TAG, "getItemCount: " + mArrNews.size());
+        if(mArrNews.size() == 0)
+            onClickSpecificIcon.onChangeScreen(NewsListFragment.NO_RESULTS);
+        else
+            onClickSpecificIcon.onChangeScreen(NewsListFragment.LIST_RESULT);
         return mArrNews.size();
     }
 
@@ -132,6 +138,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.ViewHo
     }
 
     public interface onClickSpecificIcon{
+        void onChangeScreen(int which);
         void onClickFavoriteIcon(int position, boolean status);
         void onClickDownloadIcon(int position, boolean status);
         void onClickShareIcon(int position);
