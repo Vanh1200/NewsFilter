@@ -83,11 +83,6 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        Log.d(TAG, "getItemCount: " + mArrNews.size());
-        if(mArrNews.size() == 0)
-            onClickSpecificIcon.onChangeScreen(NewsListFragment.NO_RESULTS);
-        else
-            onClickSpecificIcon.onChangeScreen(NewsListFragment.LIST_RESULT);
         return mArrNews.size();
     }
 
@@ -99,6 +94,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.ViewHo
         private ImageView ivFavorite;
         private ImageView ivDownload;
         private ImageView ivShare;
+        private TextView tvPublisher;
         public ViewHolder(View itemView) {
             super(itemView);
             ivThumbnail = itemView.findViewById(R.id.iv_thumbnail);
@@ -108,11 +104,13 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.ViewHo
             ivFavorite = itemView.findViewById(R.id.iv_like);
             ivDownload = itemView.findViewById(R.id.iv_download);
             ivShare = itemView.findViewById(R.id.iv_share);
+            tvPublisher = itemView.findViewById(R.id.tv_publisher);
         }
         public void bindData(News news){
             tvTitle.setText(news.getTitle());
             tvDescription.setText(news.getDescription());
             tvPubDate.setText(news.getPubDate());
+            tvPublisher.setText(news.getPublisher());
             if(news.isLiked())
                 ivFavorite.setImageResource(R.drawable.liked);
             else
@@ -138,7 +136,6 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.ViewHo
     }
 
     public interface onClickSpecificIcon{
-        void onChangeScreen(int which);
         void onClickFavoriteIcon(int position, boolean status);
         void onClickDownloadIcon(int position, boolean status);
         void onClickShareIcon(int position);

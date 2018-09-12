@@ -3,6 +3,7 @@ package com.vanh1200.newsfilter.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,35 +24,37 @@ import com.vanh1200.newsfilter.Adapter.ViewPagerAdapter;
 import com.vanh1200.newsfilter.Model.News;
 import com.vanh1200.newsfilter.Network.XMLAsync;
 import com.vanh1200.newsfilter.R;
+import com.vanh1200.newsfilter.SLQite.FavoriteDAO;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class NewsListFragment extends Fragment implements NewsListAdapter.onClickSpecificIcon, XMLAsync.onResultListenerCallBack, MainActivity.onKeywordListener {
     private static final String TAG = "NewsListFragment";
-    public static final int NOT_SEARCH = 0;
-    public static final int NO_RESULTS = 1;
-    public static final int LIST_RESULT = 2;
-
     private ArrayList<News> arrNews = new ArrayList<>();
     private RecyclerView rcvNewsList;
     private RelativeLayout notSearchScreen;
     private RelativeLayout noResultsScreen;
     private NewsListAdapter newsListAdapter;
     private XMLAsync xmlAsync;
-
-//    public ProgressDialog dialog;
-
-    private boolean isSubmitedKeyword = false;
+    private FavoriteDAO favoriteDAO; // to check favorite item on search results
+    public static NewsListFragment instance;
 
     public NewsListFragment() {
+    }
+
+    public static NewsListFragment getInstance() {
+        if (instance == null)
+            instance = new NewsListFragment();
+        return instance;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
-        MainActivity mainActivity = (MainActivity) getActivity(); // to get Query from searchView at MainActivity
-        mainActivity.setKeywordListener(this);
+        ((MainActivity) getActivity()).setKeywordListener(this);
         initList(view);
         return view;
     }
@@ -69,54 +72,35 @@ public class NewsListFragment extends Fragment implements NewsListAdapter.onClic
 
     private void excuteGetDataFromKeyWord(String keyword) {
         Log.d(TAG, "getDataFromKeyWord: " + keyword);
-        if(keyword!=null){
-            keyword = keyword.trim().replace(" ", "%20");
+        if (keyword != null) {
+//            try {
+//                keyword = URLEncoder.encode(keyword, "utf-8");
+//            } catch (UnsupportedEncodingException e) {
+//                e.printStackTrace();
+//            }
+            keyword = Uri.encode(keyword);
             xmlAsync = new XMLAsync(this, getActivity());
             String url = MainActivity.API.replace("keyword", keyword);
-//            dialog = new ProgressDialog(getActivity());
-//            dialog.show();
             xmlAsync.execute(url);
             Log.d(TAG, "getDataFromKeyWord: URL: " + url);
         }
     }
 
     @Override
-    public void onChangeScreen(int which) {
-        noResultsScreen.setVisibility(View.INVISIBLE);
-        rcvNewsList.setVisibility(View.INVISIBLE);
-        notSearchScreen.setVisibility(View.INVISIBLE);
-
-        switch (which){
-            case NO_RESULTS:
-                if(isSubmitedKeyword)
-                    noResultsScreen.setVisibility(View.VISIBLE);
-                else
-                    notSearchScreen.setVisibility(View.VISIBLE);
-                break;
-            case LIST_RESULT:
-                rcvNewsList.setVisibility(View.VISIBLE);
-                break;
-        }
-    }
-
-    @Override
     public void onClickFavoriteIcon(int position, boolean status) {
-        MainActivity mainActivity = (MainActivity) getActivity();
-        FavoriteFragment fragment = (FavoriteFragment) mainActivity.getArrFragment().get(1);
+//        3 way two communicate between fragments
+//        FavoriteFragment fragment = (FavoriteFragment) ((MainActivity) getActivity()).getArrFragment().get(1);
 //        FavoriteFragment fragment = (FavoriteFragment) getFragmentManager().findFragmentByTag("android:switcher:" + R.id.view_pager + ":" + 1);
-        if(fragment != null){
-            News news = arrNews.get(position);
-            if(!status){
-                fragment.addItem(news, 0 );
-                Toast.makeText(getActivity(), "Added to favorite", Toast.LENGTH_SHORT).show();
-            }
-            else{
-                fragment.deleteItem(news);
-                Toast.makeText(getActivity(), "Removed from favorite", Toast.LENGTH_SHORT).show();
-            }
+        FavoriteFragment fragment = FavoriteFragment.getInstance();
+        News news = arrNews.get(position);
+        if (!status) { // if not like
+            fragment.addItem(news, 0);
+            Toast.makeText(getActivity(), "Added to favorite", Toast.LENGTH_SHORT).show();
+        } else { // if liked
+            fragment.deleteItem(news);
+            Toast.makeText(getActivity(), "Removed from favorite", Toast.LENGTH_SHORT).show();
         }
-        else
-            Log.d(TAG, "onClickFavoriteIcon: " + "can not find Favorite fragment");
+
     }
 
     @Override
@@ -129,9 +113,9 @@ public class NewsListFragment extends Fragment implements NewsListAdapter.onClic
         Toast.makeText(getActivity(), "You clicked share", Toast.LENGTH_SHORT).show();
     }
 
-    public void editItem(News news){
+    public void editItem(News news) {
         int position = arrNews.indexOf(news);
-        if(position != -1){ // if item was found
+        if (position != -1) { // if item was found
             arrNews.set(position, news);
             newsListAdapter.notifyItemChanged(position);
         }
@@ -140,16 +124,37 @@ public class NewsListFragment extends Fragment implements NewsListAdapter.onClic
 
     @Override
     public void onParsedResultCallback(ArrayList<News> arrNews) {
-        Log.d(TAG, "onParsedResultCallback: " +arrNews.size());
-//        dialog.dismiss();
+        Log.d(TAG, "onParsedResultCallback: " + arrNews.size());
         this.arrNews.clear();
+        favoriteDAO = new FavoriteDAO(getActivity());
+        arrNews = checkFavoriteItem(arrNews);
         this.arrNews.addAll(arrNews);
         newsListAdapter.notifyDataSetChanged();
+        changeScreen(arrNews.size());
+    }
+
+    private ArrayList<News> checkFavoriteItem(ArrayList<News> arrNews) {
+        for (News news: arrNews) {
+            if(favoriteDAO.isContain(news)){
+                news.setLiked(true);
+                Log.d(TAG, "checkFavoriteItem: like");
+            }
+        }
+        return arrNews;
+    }
+
+    private void changeScreen(int size) {
+        noResultsScreen.setVisibility(View.INVISIBLE);
+        rcvNewsList.setVisibility(View.INVISIBLE);
+        notSearchScreen.setVisibility(View.INVISIBLE);
+        if (size == 0)
+            noResultsScreen.setVisibility(View.VISIBLE);
+        else
+            rcvNewsList.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onSubmittedKeyword(String keyword) {
-        isSubmitedKeyword = true;
         excuteGetDataFromKeyWord(keyword);
     }
 }

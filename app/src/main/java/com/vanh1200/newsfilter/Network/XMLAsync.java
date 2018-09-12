@@ -32,6 +32,7 @@ public class XMLAsync extends AsyncTask<String, Void, ArrayList<News>>{
     protected void onPreExecute() {
         super.onPreExecute();
         progressDialog = new ProgressDialog(mContext);
+        progressDialog.setMessage("Loading");
         progressDialog.setCancelable(false);
         progressDialog.show();
     }

@@ -52,12 +52,20 @@ public class SavedListAdapter extends RecyclerView.Adapter<SavedListAdapter.View
         private TextView tvTitle;
         private TextView tvDescription;
         private TextView tvPubDate;
+        private TextView tvPublisher;
+        private ImageView ivFavorite;
+        private ImageView ivDownload;
+        private ImageView ivShare;
         public ViewHolder(View itemView) {
             super(itemView);
             ivThumbnail = itemView.findViewById(R.id.iv_thumbnail);
             tvTitle = itemView.findViewById(R.id.tv_title_news);
             tvDescription = itemView.findViewById(R.id.tv_description);
             tvPubDate = itemView.findViewById(R.id.tv_pub_date);
+            ivFavorite = itemView.findViewById(R.id.iv_like);
+            ivDownload = itemView.findViewById(R.id.iv_download);
+            ivShare = itemView.findViewById(R.id.iv_share);
+            tvPublisher = itemView.findViewById(R.id.tv_publisher);
         }
         public void bindData(News news){
             tvTitle.setText(news.getTitle());

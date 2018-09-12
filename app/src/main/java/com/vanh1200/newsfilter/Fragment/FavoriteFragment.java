@@ -21,6 +21,7 @@ import android.widget.RelativeLayout;
 import com.vanh1200.newsfilter.Adapter.FavoriteListAdapter;
 import com.vanh1200.newsfilter.Model.News;
 import com.vanh1200.newsfilter.R;
+import com.vanh1200.newsfilter.SLQite.FavoriteDAO;
 
 import java.util.ArrayList;
 
@@ -28,6 +29,8 @@ public class FavoriteFragment extends Fragment implements FavoriteListAdapter.on
     private static final String TAG = "FavoriteFragment";
     public static final int NO_FAVORITES = 0;
     public static final int LIST_FAVORITES = 1;
+    public static FavoriteFragment instance;
+    public FavoriteDAO favoriteDAO;
 
     private RecyclerView rcvFavorite;
     private RelativeLayout defaultFavoriteScreen;
@@ -37,16 +40,29 @@ public class FavoriteFragment extends Fragment implements FavoriteListAdapter.on
     public FavoriteFragment() {
     }
 
+    public static FavoriteFragment getInstance() {
+        if (instance == null) {
+            instance = new FavoriteFragment();
+        }
+        return instance;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_favorite, container, false);
+        initFavoriteNewsFromDatabase();
         initRecyclerView(view);
         return view;
     }
 
-    private void initRecyclerView(View view) {
+    private void initFavoriteNewsFromDatabase() {
+        favoriteDAO = new FavoriteDAO(getActivity());
         arrFavoriteList = new ArrayList<>();
+        arrFavoriteList = favoriteDAO.getAllNews();
+    }
+
+    private void initRecyclerView(View view) {
         rcvFavorite = view.findViewById(R.id.rcv_news_favorite_list);
         defaultFavoriteScreen = view.findViewById(R.id.default_favorite_screen);
         favoriteListAdapter = new FavoriteListAdapter(getActivity(), arrFavoriteList, this);
@@ -56,9 +72,9 @@ public class FavoriteFragment extends Fragment implements FavoriteListAdapter.on
     }
 
 
-
-    public void addItem(News news, int position){
+    public void addItem(News news, int position) {
         arrFavoriteList.add(news);
+        favoriteDAO.addNews(news);
         favoriteListAdapter.notifyItemInserted(position);
         favoriteListAdapter.notifyItemRangeChanged(position, arrFavoriteList.size());
     }
@@ -66,17 +82,17 @@ public class FavoriteFragment extends Fragment implements FavoriteListAdapter.on
     public void deleteItem(News news) {
         int position = arrFavoriteList.indexOf(news);
         arrFavoriteList.remove(position);
+        favoriteDAO.deleteNews(news);
         favoriteListAdapter.notifyItemRemoved(position);
         favoriteListAdapter.notifyItemRangeChanged(position, arrFavoriteList.size());
     }
 
     @Override
     public void onChangeScreen(int which) {
-        if(which == NO_FAVORITES){
+        if (which == NO_FAVORITES) {
             defaultFavoriteScreen.setVisibility(View.VISIBLE);
             rcvFavorite.setVisibility(View.INVISIBLE);
-        }
-        else if(which == LIST_FAVORITES){
+        } else if (which == LIST_FAVORITES) {
             defaultFavoriteScreen.setVisibility(View.INVISIBLE);
             rcvFavorite.setVisibility(View.VISIBLE);
         }
@@ -84,22 +100,22 @@ public class FavoriteFragment extends Fragment implements FavoriteListAdapter.on
 
     @Override
     public void onClickFavoriteIcon(int position) {
-        // anh xa 2 fragment con lai
-        NewsListFragment listFragment = (NewsListFragment) getFragmentManager().findFragmentByTag("android:switcher:" + R.id.view_pager + ":" + 0);
-        SavedFragment savedFragment = (SavedFragment) getFragmentManager().findFragmentByTag("android:switcher:" + R.id.view_pager + ":" + 2);
+//        NewsListFragment listFragment = (NewsListFragment) getFragmentManager().findFragmentByTag("android:switcher:" + R.id.view_pager + ":" + 0);
+//        SavedFragment savedFragment = (SavedFragment) getFragmentManager().findFragmentByTag("android:switcher:" + R.id.view_pager + ":" + 2);
+        NewsListFragment listFragment = NewsListFragment.getInstance();
+        SavedFragment savedFragment = SavedFragment.getInstance();
 
+        //handle at newsListFragment
+        News news = arrFavoriteList.get(position);
+        listFragment.editItem(news);
 
-        //xu li ben newsListFragment
-        if(listFragment != null){
-            News news = arrFavoriteList.get(position);
-            listFragment.editItem(news);
-        }
-        //xu li ben savedFragment: chua xu li
+        //handle at savedFragment: not handled yet
 
-        //cuoi cung la xoa no khoi favorite list
-        arrFavoriteList.remove(position);
-        favoriteListAdapter.notifyItemRemoved(position);
-        favoriteListAdapter.notifyItemRangeChanged(position, arrFavoriteList.size());
+        //final, remove from list;
+//        arrFavoriteList.remove(position);
+//        favoriteListAdapter.notifyItemRemoved(position);
+//        favoriteListAdapter.notifyItemRangeChanged(position, arrFavoriteList.size());
+        deleteItem(arrFavoriteList.get(position));
     }
 
     @Override

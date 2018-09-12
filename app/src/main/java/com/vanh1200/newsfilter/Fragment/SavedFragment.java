@@ -11,6 +11,13 @@ import android.view.ViewGroup;
 import com.vanh1200.newsfilter.R;
 
 public class SavedFragment extends Fragment{
+    public static SavedFragment instance;
+
+    public static SavedFragment getInstance() {
+        if(instance == null)
+            instance = new SavedFragment();
+        return instance;
+    }
 
     public SavedFragment() {
     }

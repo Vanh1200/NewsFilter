@@ -56,20 +56,25 @@ public class XMLParser extends DefaultHandler{
                     break;
                 }
                 // Find link of image
-                Log.d(TAG, "endElement: value" + value);
                 String temp_image = "img src=\"//";
                 int beginIndex = value.indexOf(temp_image) + temp_image.length();
                 String link = value.substring(beginIndex);
-                Log.d(TAG, "endElement: link" + link);
-                Log.d(TAG, "endElement: index" + link.indexOf("\""));
                 String imgSrc = link.substring(0, link.indexOf("\""));
                 imgSrc = "https://" + imgSrc;
                 Log.d(TAG, "endElement: " + imgSrc);
                 news.setImage(imgSrc);
 
                 // Find des
-                news.setDescription("Still not found");
-                //
+                String temp_description = "</font></b></font><br><font size=\"-1\">";
+                String des = link.substring(link.indexOf(temp_description) + temp_description.length());
+                String final_des = des.substring(0, des.indexOf("</font><br><font size=\"-1\""));
+                final_des = final_des.replace("&nbsp;...","" );
+                final_des = final_des.replace("<b>","" );
+                final_des = final_des.replace("</b>","" );
+                final_des = final_des.replace("&quot;", "\"");
+                Log.d(TAG, "endElement: description: " + final_des);
+                news.setDescription(final_des);
+
                 break;
             case XMLTag.TAG_LINK:
                 if(!allowed_link){

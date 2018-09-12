@@ -70,6 +70,7 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
         private TextView tvPubDate;
         private ImageView ivFavorite;
         private ImageView ivDownload;
+        private TextView tvPublisher;
         public ViewHolder(View itemView) {
             super(itemView);
             ivThumbnail = itemView.findViewById(R.id.iv_thumbnail);
@@ -78,12 +79,14 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
             tvPubDate = itemView.findViewById(R.id.tv_pub_date);
             ivDownload = itemView.findViewById(R.id.iv_download);
             ivFavorite = itemView.findViewById(R.id.iv_like);
+            tvPublisher = itemView.findViewById(R.id.tv_publisher);
 
         }
         public void bindData(News news){
             tvTitle.setText(news.getTitle());
             tvDescription.setText(news.getDescription());
             tvPubDate.setText(news.getPubDate());
+            tvPublisher.setText(news.getPublisher());
             if(news.isLiked())
                 ivFavorite.setImageResource(R.drawable.liked);
             else

@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private static final String TAG = "MainActivity";
     private ArrayList<android.support.v4.app.Fragment> arrFragment;
     private ViewPagerAdapter adapter;
+    private SearchView searchView;
 
     public onKeywordListener keywordListener;
 
@@ -57,10 +58,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
 
+        //init Fragment with Singleton
         arrFragment = new ArrayList<>();
-        arrFragment.add(new NewsListFragment());
-        arrFragment.add(new FavoriteFragment());
-        arrFragment.add(new SavedFragment());
+        arrFragment.add(NewsListFragment.getInstance());
+        arrFragment.add(FavoriteFragment.getInstance());
+        arrFragment.add(SavedFragment.getInstance());
 
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(arrFragment.get(0), "News");
@@ -78,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_toolbar, menu);
-        SearchView searchView = (SearchView) menu.findItem(R.id.tb_search).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.tb_search).getActionView();
         searchView.setOnQueryTextListener(this);
         return super.onCreateOptionsMenu(menu);
     }
@@ -86,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public boolean onQueryTextSubmit(String query) {
         keywordListener.onSubmittedKeyword(query);
+        searchView.clearFocus();
         return true;
     }
 

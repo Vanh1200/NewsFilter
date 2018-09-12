@@ -1,5 +1,7 @@
 package com.vanh1200.newsfilter.Model;
 
+import android.support.annotation.NonNull;
+
 public class News {
     private String title;
     private String image;
@@ -73,5 +75,13 @@ public class News {
 
     public void setPubDate(String pubDate) {
         this.pubDate = pubDate;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        News news = (News) obj;
+        if(this.getLink().equals(news.getLink()))
+            return true;
+        return false;
     }
 }
