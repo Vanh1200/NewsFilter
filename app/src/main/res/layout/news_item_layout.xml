@@ -89,8 +89,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/like"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"/>
+                android:paddingTop="7dp"
+                android:paddingBottom="6dp"/>
 
             <ImageView
                 android:clickable="true"
@@ -99,8 +99,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
                 android:src="@drawable/download_2"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"/>
+                android:paddingTop="7dp"
+                android:paddingBottom="6dp"/>
 
             <ImageView
                 android:id="@+id/iv_share"
@@ -108,8 +108,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
                 android:src="@drawable/share_2"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"/>
+                android:paddingTop="7dp"
+                android:paddingBottom="6dp"/>
         </LinearLayout>
         <TextView
             android:layout_width="wrap_content"

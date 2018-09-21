@@ -1,5 +1,6 @@
 package com.vanh1200.newsfilter.Network;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -7,6 +8,7 @@ import android.util.Log;
 
 import com.vanh1200.newsfilter.Activity.MainActivity;
 import com.vanh1200.newsfilter.Model.News;
+import com.vanh1200.newsfilter.R;
 
 import org.xml.sax.SAXException;
 
@@ -17,22 +19,23 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import dmax.dialog.SpotsDialog;
+
 public class XMLAsync extends AsyncTask<String, Void, ArrayList<News>>{
     private static final String TAG = "XMLAsync";
     private onResultListenerCallBack listenerCallBack;
-    private ProgressDialog progressDialog;
+    private AlertDialog progressDialog;
     private Context mContext;
 
     public XMLAsync(onResultListenerCallBack listenerCallBack, Context context) {
         this.listenerCallBack = listenerCallBack;
         this.mContext = context;
+        progressDialog = new SpotsDialog(mContext, R.style.Custom);
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        progressDialog = new ProgressDialog(mContext);
-        progressDialog.setMessage("Loading");
         progressDialog.setCancelable(false);
         progressDialog.show();
     }

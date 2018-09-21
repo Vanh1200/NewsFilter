@@ -1,8 +1,12 @@
 package com.vanh1200.newsfilter.Activity;
 
+import android.Manifest;
 import android.app.Fragment;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -32,7 +36,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private static final String TAG = "MainActivity";
     private ArrayList<android.support.v4.app.Fragment> arrFragment;
     private ViewPagerAdapter adapter;
+    private ViewPager viewPager;
     private SearchView searchView;
+    private String[] PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
 
     public onKeywordListener keywordListener;
 
@@ -52,9 +59,24 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         setPagerAdapter();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkPermission();
+    }
+
+    public void checkPermission() {
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                || (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED))
+        {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(PERMISSIONS, 1);
+            }
+        }
+    }
 
     private void setPagerAdapter() {
-        ViewPager viewPager = findViewById(R.id.view_pager);
+        viewPager = findViewById(R.id.view_pager);
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
 
@@ -87,7 +109,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        keywordListener.onSubmittedKeyword(query);
+        if(keywordListener != null){
+            keywordListener.onSubmittedKeyword(query);
+            viewPager.setCurrentItem(0);
+        }
+
         searchView.clearFocus();
         return true;
     }

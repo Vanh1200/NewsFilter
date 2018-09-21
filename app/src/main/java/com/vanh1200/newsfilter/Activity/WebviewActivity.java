@@ -1,5 +1,6 @@
 package com.vanh1200.newsfilter.Activity;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,6 +16,8 @@ import android.webkit.WebViewClient;
 import com.vanh1200.newsfilter.Adapter.NewsListAdapter;
 import com.vanh1200.newsfilter.Fragment.NewsListFragment;
 import com.vanh1200.newsfilter.R;
+
+import dmax.dialog.SpotsDialog;
 
 public class WebviewActivity extends AppCompatActivity{
     private WebView webView;
@@ -41,26 +44,36 @@ public class WebviewActivity extends AppCompatActivity{
         webSettings.setUseWideViewPort(true);
         webSettings.setSaveFormData(true);
 
-        final ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setMessage("Loading");
-        dialog.show();
+        final AlertDialog dialog = new SpotsDialog(this, R.style.Custom);
         webView.loadUrl(url);
         //fore links open in webview only
         webView.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-                dialog.show();
+                dialog.setCancelable(true);
+                dialog.show(); // this might occur exception when try display dialog in the activity that no longer exist
             }
 
             @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
+            public void onPageCommitVisible(WebView view, String url) {
+                super.onPageCommitVisible(view, url);
                 if(dialog!=null&&dialog.isShowing()){
                     dialog.dismiss();
                     dialog.hide();
                 }
             }
+
+            // if put dismiss in side method below it will be very long time waiting
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+            }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }

@@ -71,6 +71,20 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.ViewHo
                 }
             }
         });
+        holder.ivDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mArrNews.get(position).isDownloaded()){
+                    holder.ivDownload.setImageResource(R.drawable.download_2);
+                    mArrNews.get(position).setDownloaded(false);
+                    onClickSpecificIcon.onClickDownloadIcon(position, true);
+                }else{
+                    holder.ivDownload.setImageResource(R.drawable.downloaded);
+                    mArrNews.get(position).setDownloaded(true);
+                    onClickSpecificIcon.onClickDownloadIcon(position, false);
+                }
+            }
+        });
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

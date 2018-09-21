@@ -22,6 +22,7 @@ import com.vanh1200.newsfilter.Activity.MainActivity;
 import com.vanh1200.newsfilter.Adapter.NewsListAdapter;
 import com.vanh1200.newsfilter.Adapter.ViewPagerAdapter;
 import com.vanh1200.newsfilter.Model.News;
+import com.vanh1200.newsfilter.Network.DownloadHtmlAsync;
 import com.vanh1200.newsfilter.Network.XMLAsync;
 import com.vanh1200.newsfilter.R;
 import com.vanh1200.newsfilter.SLQite.FavoriteDAO;
@@ -30,7 +31,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-public class NewsListFragment extends Fragment implements NewsListAdapter.onClickSpecificIcon, XMLAsync.onResultListenerCallBack, MainActivity.onKeywordListener {
+public class NewsListFragment extends Fragment implements NewsListAdapter.onClickSpecificIcon, XMLAsync.onResultListenerCallBack, MainActivity.onKeywordListener , DownloadHtmlAsync.DownloadHtmlCallBack{
     private static final String TAG = "NewsListFragment";
     private ArrayList<News> arrNews = new ArrayList<>();
     private RecyclerView rcvNewsList;
@@ -40,6 +41,7 @@ public class NewsListFragment extends Fragment implements NewsListAdapter.onClic
     private XMLAsync xmlAsync;
     private FavoriteDAO favoriteDAO; // to check favorite item on search results
     public static NewsListFragment instance;
+    public int temp = -1;
 
     public NewsListFragment() {
     }
@@ -54,7 +56,7 @@ public class NewsListFragment extends Fragment implements NewsListAdapter.onClic
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
-        ((MainActivity) getActivity()).setKeywordListener(this);
+        ((MainActivity) getActivity()).setKeywordListener(this); // listen keyword from MainActivity
         initList(view);
         return view;
     }
@@ -100,12 +102,20 @@ public class NewsListFragment extends Fragment implements NewsListAdapter.onClic
             fragment.deleteItem(news);
             Toast.makeText(getActivity(), "Removed from favorite", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     @Override
     public void onClickDownloadIcon(int position, boolean status) {
-        Toast.makeText(getActivity(), "You clicked download", Toast.LENGTH_SHORT).show();
+        SavedFragment fragment = SavedFragment.getInstance();
+        News news = arrNews.get(position);
+        if(!status){
+            Toast.makeText(getActivity(), "Added to download", Toast.LENGTH_SHORT).show();
+            new DownloadHtmlAsync(this).execute(news.getLink(), news.getTitle(), String.valueOf(position));
+        }
+        else {
+            fragment.deleteItem(news);
+            Toast.makeText(getActivity(), "Removed from download", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -156,5 +166,15 @@ public class NewsListFragment extends Fragment implements NewsListAdapter.onClic
     @Override
     public void onSubmittedKeyword(String keyword) {
         excuteGetDataFromKeyWord(keyword);
+    }
+
+    @Override
+    public void onSavedHtml(String url, int position) {
+        Log.d(TAG, "onSavedHtml: " + url);
+        News news = arrNews.get(position);
+        news.setLink(url);
+        news.setDownloaded(true);
+        arrNews.set(position, news);
+        SavedFragment.getInstance().addItem(news,position );
     }
 }

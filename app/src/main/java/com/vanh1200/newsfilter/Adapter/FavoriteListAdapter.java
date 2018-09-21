@@ -1,6 +1,7 @@
 package com.vanh1200.newsfilter.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,11 +12,14 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.vanh1200.newsfilter.Activity.WebviewActivity;
 import com.vanh1200.newsfilter.Fragment.FavoriteFragment;
 import com.vanh1200.newsfilter.Model.News;
 import com.vanh1200.newsfilter.R;
 
 import java.util.ArrayList;
+
+import static com.vanh1200.newsfilter.Adapter.NewsListAdapter.KEY_WEB_URL;
 
 public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapter.ViewHolder>{
     private Context mContext;
@@ -50,6 +54,14 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
                     mArrNews.get(position).setLiked(!mArrNews.get(position).isLiked());
                     onClickSpecificIcon.onClickFavoriteIcon(position);
                 }
+            }
+        });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, WebviewActivity.class);
+                intent.putExtra(KEY_WEB_URL, mArrNews.get(position).getLink());
+                mContext.startActivity(intent);
             }
         });
     }
@@ -106,10 +118,8 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
     public interface onClickSpecificIcon{
         void onChangeScreen(int which);
         void onClickFavoriteIcon(int position);
-        void onClickDownloadIcon(int position, boolean status);
+        void onClickDownloadIcon(int position);
         void onClickShareIcon(int position);
     }
-
-
 
 }

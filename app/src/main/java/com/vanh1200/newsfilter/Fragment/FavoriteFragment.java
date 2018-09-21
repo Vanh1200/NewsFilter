@@ -119,7 +119,7 @@ public class FavoriteFragment extends Fragment implements FavoriteListAdapter.on
     }
 
     @Override
-    public void onClickDownloadIcon(int position, boolean status) {
+    public void onClickDownloadIcon(int position) {
 
     }
 
