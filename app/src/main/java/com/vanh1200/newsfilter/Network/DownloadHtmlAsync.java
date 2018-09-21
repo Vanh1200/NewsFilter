@@ -36,6 +36,8 @@ public class DownloadHtmlAsync extends AsyncTask<String, Integer, String>{
     @Override
     protected String doInBackground(String... strings) {
         fileName = strings[1];
+        String url = strings[0];
+        suffix = url.substring(url.lastIndexOf("."));
         position = Integer.parseInt(strings[2]);
         return getWebPage(strings[0]);
     }
@@ -58,7 +60,7 @@ public class DownloadHtmlAsync extends AsyncTask<String, Integer, String>{
             folder.mkdir();
         }
         String path = Environment.getExternalStorageDirectory().getPath() + "/" + FOLDER_NAME + "/";
-        String fileName = name + ".html";
+        String fileName = name + suffix;
         File file = new File(path, fileName);
 
         try {
@@ -66,6 +68,7 @@ public class DownloadHtmlAsync extends AsyncTask<String, Integer, String>{
             byte[] data = html.getBytes();
             out.write(data);
             out.close();
+            Log.d(TAG, "saveHtmlFile: " + file.getAbsolutePath());
             return "file:///" + file.getAbsolutePath();
         } catch (FileNotFoundException e) {
             e.printStackTrace();

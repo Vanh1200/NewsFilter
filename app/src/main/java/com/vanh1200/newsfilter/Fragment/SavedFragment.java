@@ -16,6 +16,7 @@ import com.vanh1200.newsfilter.Adapter.FavoriteListAdapter;
 import com.vanh1200.newsfilter.Adapter.SavedListAdapter;
 import com.vanh1200.newsfilter.Model.News;
 import com.vanh1200.newsfilter.R;
+import com.vanh1200.newsfilter.SLQite.DownloadDao;
 import com.vanh1200.newsfilter.SLQite.FavoriteDAO;
 
 import java.util.ArrayList;
@@ -25,11 +26,11 @@ public class SavedFragment extends Fragment implements SavedListAdapter.onClickS
     public static final int NO_DOWNLOADS = 0;
     public static final int LIST_DOWNLOADS = 1;
     public static SavedFragment instance;
-//    public FavoriteDAO favoriteDAO;
+    public DownloadDao downloadDao;
 
     private RecyclerView rcvSaved;
     private RelativeLayout defaultSavedScreen;
-    private ArrayList<News> arrSavedList = new ArrayList<>();
+    private ArrayList<News> arrSavedList;
     private SavedListAdapter savedListAdapter;
 
     public static SavedFragment getInstance() {
@@ -45,15 +46,16 @@ public class SavedFragment extends Fragment implements SavedListAdapter.onClickS
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_saved, container, false);
+        initDownloadNewsFromDatabase();
         initRecyclerView(view);
         return view;
     }
 
-//    private void initFavoriteNewsFromDatabase() {
-//        favoriteDAO = new FavoriteDAO(getActivity());
-//        arrFavoriteList = new ArrayList<>();
-//        arrFavoriteList = favoriteDAO.getAllNews();
-//    }
+    private void initDownloadNewsFromDatabase() {
+        downloadDao = new DownloadDao(getActivity());
+        arrSavedList = new ArrayList<>();
+        arrSavedList = downloadDao.getAllNews();
+    }
 
     private void initRecyclerView(View view) {
         rcvSaved = view.findViewById(R.id.rcv_news_saved_list);
@@ -66,7 +68,7 @@ public class SavedFragment extends Fragment implements SavedListAdapter.onClickS
 
     public void addItem(News news, int position) {
         arrSavedList.add(news);
-//        favoriteDAO.addNews(news);
+        downloadDao.addNews(news);
         savedListAdapter.notifyItemInserted(position);
         savedListAdapter.notifyItemRangeChanged(position, arrSavedList.size());
     }
@@ -74,7 +76,7 @@ public class SavedFragment extends Fragment implements SavedListAdapter.onClickS
     public void deleteItem(News news) {
         int position = arrSavedList.indexOf(news);
         arrSavedList.remove(position);
-//        favoriteDAO.deleteNews(news);
+        downloadDao.deleteNews(news);
         savedListAdapter.notifyItemRemoved(position);
         savedListAdapter.notifyItemRangeChanged(position, arrSavedList.size());
     }
@@ -103,6 +105,7 @@ public class SavedFragment extends Fragment implements SavedListAdapter.onClickS
 
 //        FavoriteFragment favoriteFragment = FavoriteFragment.getInstance();
 //        favoriteFragment.editItem(News);
+        deleteItem(arrSavedList.get(position));
     }
 
     @Override

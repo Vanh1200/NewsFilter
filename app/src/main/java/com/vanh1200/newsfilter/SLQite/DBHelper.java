@@ -27,6 +27,13 @@ public class DBHelper extends SQLiteOpenHelper{
             + COLUMN_IMAGE + " TEXT, "
             + COLUMN_PUBDATE + " TEXT, "
             + COLUMN_PUBLISHER + " TEXT);";
+    private static String CREATE_DOWNLOADS_TABLE = "CREATE TABLE " + TABLE_DOWNLOAD + " ("
+            + COLUMN_LINK + " TEXT PRIMARY KEY, "
+            + COLUMN_TITLE + " TEXT, "
+            + COLUMN_DESCRIPTION + " TEXT, "
+            + COLUMN_IMAGE + " TEXT, "
+            + COLUMN_PUBDATE + " TEXT, "
+            + COLUMN_PUBLISHER + " TEXT);";
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -35,6 +42,7 @@ public class DBHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_FAVORITES_TABLE);
+        db.execSQL(CREATE_DOWNLOADS_TABLE);
         Log.d(TAG, "onCreate: Create Database successfull!");
     }
 
