@@ -88,9 +88,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.ViewHo
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, WebviewActivity.class);
-                intent.putExtra(KEY_WEB_URL, mArrNews.get(position).getLink());
-                mContext.startActivity(intent);
+                onClickSpecificIcon.onClickItem(mArrNews.get(position));
             }
         });
     }
@@ -153,5 +151,6 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.ViewHo
         void onClickFavoriteIcon(int position, boolean status);
         void onClickDownloadIcon(int position, boolean status);
         void onClickShareIcon(int position);
+        void onClickItem(News news);
     }
 }

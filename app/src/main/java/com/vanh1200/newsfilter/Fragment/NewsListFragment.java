@@ -3,6 +3,7 @@ package com.vanh1200.newsfilter.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,8 +20,8 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.vanh1200.newsfilter.Activity.MainActivity;
+import com.vanh1200.newsfilter.Activity.WebviewActivity;
 import com.vanh1200.newsfilter.Adapter.NewsListAdapter;
-import com.vanh1200.newsfilter.Adapter.ViewPagerAdapter;
 import com.vanh1200.newsfilter.Model.News;
 import com.vanh1200.newsfilter.Network.DownloadHtmlAsync;
 import com.vanh1200.newsfilter.Network.XMLAsync;
@@ -30,6 +31,8 @@ import com.vanh1200.newsfilter.SLQite.FavoriteDAO;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+
+import static com.vanh1200.newsfilter.Adapter.NewsListAdapter.KEY_WEB_URL;
 
 public class NewsListFragment extends Fragment implements NewsListAdapter.onClickSpecificIcon, XMLAsync.onResultListenerCallBack, MainActivity.onKeywordListener , DownloadHtmlAsync.DownloadHtmlCallBack{
     private static final String TAG = "NewsListFragment";
@@ -41,7 +44,6 @@ public class NewsListFragment extends Fragment implements NewsListAdapter.onClic
     private XMLAsync xmlAsync;
     private FavoriteDAO favoriteDAO; // to check favorite item on search results
     public static NewsListFragment instance;
-    public int temp = -1;
 
     public NewsListFragment() {
     }
@@ -121,6 +123,13 @@ public class NewsListFragment extends Fragment implements NewsListAdapter.onClic
     @Override
     public void onClickShareIcon(int position) {
         Toast.makeText(getActivity(), "You clicked share", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onClickItem(News news) {
+        Intent intent = new Intent(getActivity(), com.vanh1200.newsfilter.Activity.WebviewActivity.class);
+        intent.putExtra(KEY_WEB_URL, news.getLink());
+        getActivity().startActivity(intent);
     }
 
     public void editItem(News news) {

@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +20,11 @@ import com.vanh1200.newsfilter.R;
 import com.vanh1200.newsfilter.SLQite.DownloadDao;
 import com.vanh1200.newsfilter.SLQite.FavoriteDAO;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class SavedFragment extends Fragment implements SavedListAdapter.onClickSpecificIcon{
-    private static final String TAG = "FavoriteFragment";
+    private static final String TAG = "SavedFragment";
     public static final int NO_DOWNLOADS = 0;
     public static final int LIST_DOWNLOADS = 1;
     public static SavedFragment instance;
@@ -77,6 +79,9 @@ public class SavedFragment extends Fragment implements SavedListAdapter.onClickS
         int position = arrSavedList.indexOf(news);
         arrSavedList.remove(position);
         downloadDao.deleteNews(news);
+        File file = new File(news.getLink().substring(9));
+        boolean deleted = file.delete();
+        Log.d(TAG, "deleteItem: " + deleted);
         savedListAdapter.notifyItemRemoved(position);
         savedListAdapter.notifyItemRangeChanged(position, arrSavedList.size());
     }
